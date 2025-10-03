@@ -62,7 +62,7 @@ jobs:
 
             # Setup virtual environment if not exists
             if [ ! -d "/home/deploy/djangoapp/venv" ]; then
-              python3 -m venv /home/deploy/djangoapp/venv
+              python3.10 -m venv /home/deploy/djangoapp/venv
             fi
 
             source /home/deploy/djangoapp/venv/bin/activate
