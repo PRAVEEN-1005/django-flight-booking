@@ -1,4 +1,4 @@
-name: Django CI
+name: Django CI/CD
 
 on:
   push:
@@ -26,8 +26,26 @@ jobs:
 
       - name: Run migrations
         run: python manage.py migrate
-        working-directory: flightbooking   # 👈 manage.py is inside here
+        working-directory: flightbooking
 
       - name: Run tests
         run: python manage.py test
         working-directory: flightbooking
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/djangoapp/flightbooking
+            git pull origin main
+            source ~/djangoapp/venv/bin/activate
+            ~/djangoapp/venv/bin/gunicorn --bind 0.0.0.0:8000 -D config.wsgi:application
+            sudo systemctl restart nginx
