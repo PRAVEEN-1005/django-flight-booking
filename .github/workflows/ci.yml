@@ -32,37 +32,37 @@ jobs:
         run: python manage.py test
         working-directory: flightbooking
 
-deploy:
-  needs: build
-  runs-on: ubuntu-latest
+  deploy:   # ← must be indented under jobs
+    needs: build
+    runs-on: ubuntu-latest
 
-  steps:
-    - name: Deploy to EC2
-      uses: appleboy/ssh-action@v0.1.10
-      with:
-        host: ${{ secrets.EC2_HOST }}
-        username: ${{ secrets.EC2_USER }}
-        key: ${{ secrets.EC2_SSH_KEY }}
-        script: |
-          sudo apt update
-          sudo apt install -y python3-venv git
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.10
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo apt update
+            sudo apt install -y python3-venv git
 
-          mkdir -p /home/deploy/djangoapp
-          cd /home/deploy/djangoapp
+            mkdir -p /home/deploy/djangoapp
+            cd /home/deploy/djangoapp
 
-          if [ ! -d "flightbooking/.git" ]; then
-            git clone https://github.com/PRAVEEN-1005/django-flight-booking.git flightbooking
-          fi
+            if [ ! -d "flightbooking/.git" ]; then
+              git clone https://github.com/PRAVEEN-1005/django-flight-booking.git flightbooking
+            fi
 
-          cd flightbooking
-          git fetch origin main
-          git reset --hard origin/main
+            cd flightbooking
+            git fetch origin main
+            git reset --hard origin/main
 
-          cd flightbooking
-          source venv/bin/activate
-          pip install --upgrade pip
-          pip install -r ../requirements.txt
+            cd flightbooking
+            source venv/bin/activate
+            pip install --upgrade pip
+            pip install -r ../requirements.txt
 
-          # Restart systemd service instead of nohup
-          sudo systemctl restart gunicorn
-          sudo systemctl status gunicorn --no-pager
+            # Restart systemd service instead of nohup
+            sudo systemctl restart gunicorn
+            sudo systemctl status gunicorn --no-pager
