@@ -43,34 +43,82 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            # Ensure base directory exists
-            mkdir -p /home/deploy/djangoapp
+          name: Django CI/CD
 
-            cd /home/deploy/djangoapp
+          on:
+            push:
+              branches: [ main ]
+            pull_request:
+              branches: [ main ]
 
-            # If repo not cloned yet, clone it
-            if [ ! -d "flightbooking/.git" ]; then
-              git clone https://github.com/<your-username>/<your-repo>.git flightbooking
-            fi
+          jobs:
+            build:
+              runs-on: ubuntu-latest
 
-            cd flightbooking
-            git pull origin main
+              steps:
+                - name: Checkout repository
+                  uses: actions/checkout@v3
 
-            # Setup Python virtual environment if not exists
-            if [ ! -d "/home/deploy/djangoapp/venv" ]; then
-              python3 -m venv /home/deploy/djangoapp/venv
-            fi
+                - name: Set up Python
+                  uses: actions/setup-python@v4
+                  with:
+                    python-version: "3.11"
 
-            source /home/deploy/djangoapp/venv/bin/activate
+                - name: Install dependencies
+                  run: |
+                    python -m pip install --upgrade pip
+                    pip install -r requirements.txt
 
-            # Install dependencies
-            pip install --upgrade pip
-            pip install -r requirements.txt
+                - name: Run migrations
+                  run: python manage.py migrate
+                  working-directory: flightbooking
 
-            # Export Django settings
-            export DJANGO_SETTINGS_MODULE=config.settings
+                - name: Run tests
+                  run: python manage.py test
+                  working-directory: flightbooking
 
-            # Restart Gunicorn (kill old one if running)
-            pkill -f gunicorn || true
-            /home/deploy/djangoapp/venv/bin/gunicorn --bind 0.0.0.0:8000 -D config.wsgi:application
+            deploy:
+              needs: build
+              runs-on: ubuntu-latest
+
+              steps:
+                - name: Deploy to EC2
+                  uses: appleboy/ssh-action@v0.1.10
+                  with:
+                    host: ${{ secrets.EC2_HOST }}
+                    username: ${{ secrets.EC2_USER }}
+                    key: ${{ secrets.EC2_SSH_KEY }}
+                    script: |
+                      # Install required packages
+                      sudo apt update
+                      sudo apt install -y python3-venv git
+
+                      # Ensure base directory exists
+                      mkdir -p /home/deploy/djangoapp
+                      cd /home/deploy/djangoapp
+
+                      # Clone repo if not already present
+                      if [ ! -d "flightbooking/.git" ]; then
+                        git clone https://github.com/PRAVEEN-1005/django-flight-booking.git flightbooking
+                      fi
+
+                      cd flightbooking
+                      git pull origin main
+
+                      # Setup virtual environment if not exists
+                      if [ ! -d "/home/deploy/djangoapp/venv" ]; then
+                        python3 -m venv /home/deploy/djangoapp/venv
+                      fi
+
+                      source /home/deploy/djangoapp/venv/bin/activate
+
+                      # Install Python dependencies
+                      pip install --upgrade pip
+                      pip install -r requirements.txt
+
+                      # Export Django settings
+                      export DJANGO_SETTINGS_MODULE=config.settings
+
+                      # Restart Gunicorn
+                      pkill -f gunicorn || true
+                      /home/deploy/djangoapp/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 -D config.wsgi:application
