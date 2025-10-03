@@ -23,12 +23,11 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-        working-directory: flightbooking   # 👈 requirements.txt lives here
 
       - name: Run migrations
         run: python manage.py migrate
-        working-directory: flightbooking   # 👈 manage.py lives here
+        working-directory: flightbooking   # 👈 manage.py is inside here
 
       - name: Run tests
         run: python manage.py test
-        working-directory: flightbooking   # 👈 tests run here too
+        working-directory: flightbooking
