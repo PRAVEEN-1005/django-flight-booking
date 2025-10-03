@@ -1,6 +1,6 @@
 import pytest
 from django.urls import reverse
-from bookings.models import Flight, Passenger, Booking
+from .models import Flight, Passenger, Booking   # ✅ relative import
 from django.utils import timezone
 from decimal import Decimal
 from datetime import timedelta
