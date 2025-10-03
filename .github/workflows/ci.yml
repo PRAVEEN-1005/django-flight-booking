@@ -44,9 +44,33 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            cd /home/deploy/djangoapp/flightbooking
+            # Ensure base directory exists
+            mkdir -p /home/deploy/djangoapp
+
+            cd /home/deploy/djangoapp
+
+            # If repo not cloned yet, clone it
+            if [ ! -d "flightbooking/.git" ]; then
+              git clone https://github.com/<your-username>/<your-repo>.git flightbooking
+            fi
+
+            cd flightbooking
             git pull origin main
+
+            # Setup Python virtual environment if not exists
+            if [ ! -d "/home/deploy/djangoapp/venv" ]; then
+              python3 -m venv /home/deploy/djangoapp/venv
+            fi
+
             source /home/deploy/djangoapp/venv/bin/activate
+
+            # Install dependencies
+            pip install --upgrade pip
             pip install -r requirements.txt
+
+            # Export Django settings
             export DJANGO_SETTINGS_MODULE=config.settings
+
+            # Restart Gunicorn (kill old one if running)
+            pkill -f gunicorn || true
             /home/deploy/djangoapp/venv/bin/gunicorn --bind 0.0.0.0:8000 -D config.wsgi:application
