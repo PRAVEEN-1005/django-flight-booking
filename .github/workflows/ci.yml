@@ -48,4 +48,5 @@ jobs:
             git pull origin main
             source /home/deploy/djangoapp/venv/bin/activate
             pip install -r requirements.txt
-            /home/deploy/djangoapp/venv/bin/gunicorn --bind 0.0.0.0:8000 -D flightbooking.config.wsgi:application
+            export DJANGO_SETTINGS_MODULE=config.settings
+            /home/deploy/djangoapp/venv/bin/gunicorn --bind 0.0.0.0:8000 -D config.wsgi:application
