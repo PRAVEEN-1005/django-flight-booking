@@ -24,6 +24,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest-cov
+          
 
       - name: Run migrations
         run: python manage.py migrate
@@ -31,7 +32,9 @@ jobs:
 
       - name: Run tests with pytest + coverage
         run: |
-          pytest --cov=bookings --cov-report=term-missing
+          pytest --ds=config.settings --cov=bookings --cov-report=term-missing
+        working-directory: flightbooking
+
 
   deploy:   # ← must be indented under jobs
     needs: build
