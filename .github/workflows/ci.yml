@@ -44,36 +44,29 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Install required packages
             sudo apt update
             sudo apt install -y python3-venv git
-
-            # Ensure base directory exists
+            
             mkdir -p /home/deploy/djangoapp
             cd /home/deploy/djangoapp
-
-            # Clone repo if not already present
+            
             if [ ! -d "flightbooking/.git" ]; then
               git clone https://github.com/PRAVEEN-1005/django-flight-booking.git flightbooking
             fi
-
+            
             cd flightbooking
             git pull origin main
+            
+            cd flightbooking
+            rm -rf venv
+            python3 -m venv venv
 
-            # Setup virtual environment if not exists
-            if [ ! -d "/home/deploy/djangoapp/venv" ]; then
-              /usr/bin/python3 -m venv /home/deploy/djangoapp/venv
-            fi
-
-            source /home/deploy/djangoapp/venv/bin/activate
-
-            # Install Python dependencies
+            source venv/bin/activate
             pip install --upgrade pip
-            pip install -r requirements.txt
-
-            # Export Django settings
+            pip install -r ../requirements.txt
+            pip install gunicorn
+            
             export DJANGO_SETTINGS_MODULE=config.settings
-
-            # Restart Gunicorn
+            
             pkill -f gunicorn || true
-            /home/deploy/djangoapp/venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 -D config.wsgi:application
+            venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application -D
