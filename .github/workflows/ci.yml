@@ -46,28 +46,32 @@ jobs:
           script: |
             sudo apt update
             sudo apt install -y python3-venv git
-            
+
             mkdir -p /home/deploy/djangoapp
             cd /home/deploy/djangoapp
-            
+
             if [ ! -d "flightbooking/.git" ]; then
               git clone https://github.com/PRAVEEN-1005/django-flight-booking.git flightbooking
             fi
-            
+
             cd flightbooking
             git fetch origin main
             git reset --hard origin/main
-            
+
+            # Go into the actual Django project folder
             cd flightbooking
+
+            # Rebuild venv inside the project
             rm -rf venv
             python3 -m venv venv
-
             source venv/bin/activate
+
             pip install --upgrade pip
             pip install -r ../requirements.txt
             pip install gunicorn
-            
+
             export DJANGO_SETTINGS_MODULE=config.settings
-            
+
+            # Restart Gunicorn cleanly
             pkill -f gunicorn || true
             venv/bin/gunicorn --workers 3 --bind 0.0.0.0:8000 config.wsgi:application -D
