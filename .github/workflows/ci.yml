@@ -55,7 +55,8 @@ jobs:
             fi
             
             cd flightbooking
-            git pull origin main
+            git fetch origin main
+            git reset --hard origin/main
             
             cd flightbooking
             rm -rf venv
