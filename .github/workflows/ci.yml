@@ -31,11 +31,14 @@ jobs:
 
       - name: Run Pylint (don't fail)
         run: |
+          cd flightbooking
           pylint bookings || true
 
       - name: Run Bandit (don't fail)
         run: |
+          cd flightbooking
           bandit -r bookings || true
+
 
   deploy:
     needs: build
