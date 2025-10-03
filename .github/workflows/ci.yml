@@ -28,9 +28,9 @@ jobs:
         run: python manage.py migrate
         working-directory: flightbooking
 
-      - name: Run tests
-        run: python manage.py test
-        working-directory: flightbooking
+      - name: Run tests with pytest + coverage
+        run: |
+          pytest --cov=bookings --cov-report=term-missing
 
   deploy:   # ← must be indented under jobs
     needs: build
