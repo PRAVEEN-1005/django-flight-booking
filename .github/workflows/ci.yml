@@ -32,7 +32,7 @@ jobs:
 
       - name: Run tests with pytest + coverage
         run: |
-          pytest --cov=bookings --cov-report=term-missingg
+          pytest --cov=bookings --cov-report=term-missing
         working-directory: flightbooking
 
 
