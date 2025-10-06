@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import Flight, Passenger, Booking
 from django.urls import reverse_lazy

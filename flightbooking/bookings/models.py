@@ -1,3 +1,5 @@
+# pylint: disable=no-member
+
 """Database models for the flight booking system."""
 from django.db import models
 
