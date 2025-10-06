@@ -16,6 +16,7 @@ disable=
     R1705,  # no-else-return
     W0201,  # attribute-defined-outside-init
     E0401,  # import-error (for pytest and Django lazy loading)
+    E5110
 
 [TYPECHECK]
 generated-members=objects,id,DoesNotExist,MultipleObjectsReturned
