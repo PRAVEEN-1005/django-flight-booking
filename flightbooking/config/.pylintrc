@@ -9,16 +9,17 @@ disable=
     C0116,  # missing-function-docstring
     C0301,  # line-too-long
     R0903,  # too-few-public-methods
-    E1101,  # no-member (for Django ORM false positives)
+    E1101,  # no-member (for Django ORM)
     W0702,  # bare-except
-    R0901,  # too-many-ancestors (common in Django CBVs)
+    R0901,  # too-many-ancestors (for Django CBVs)
     C0411,  # wrong-import-order
     R1705,  # no-else-return
     W0201,  # attribute-defined-outside-init
+    E0401,  # import-error (for pytest and Django lazy loading)
 
 [TYPECHECK]
 generated-members=objects,id,DoesNotExist,MultipleObjectsReturned
-ignored-modules=pytest
+ignored-modules=pytest,django
 
 [FORMAT]
 max-line-length=120
