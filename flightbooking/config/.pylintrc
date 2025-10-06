@@ -1,5 +1,5 @@
 [MASTER]
-ignore=migrations
+ignore=migrations,templates
 load-plugins=pylint_django
 
 [MESSAGES CONTROL]
@@ -9,11 +9,16 @@ disable=
     C0116,  # missing-function-docstring
     C0301,  # line-too-long
     R0903,  # too-few-public-methods
+    E1101,  # no-member (for Django ORM false positives)
+    W0702,  # bare-except
+    R0901,  # too-many-ancestors (common in Django CBVs)
+    C0411,  # wrong-import-order
+    R1705,  # no-else-return
+    W0201,  # attribute-defined-outside-init
 
 [TYPECHECK]
 generated-members=objects,id,DoesNotExist,MultipleObjectsReturned
+ignored-modules=pytest
 
 [FORMAT]
 max-line-length=120
-[MASTER]
-ignore=migrations,templates

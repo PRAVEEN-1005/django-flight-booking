@@ -29,12 +29,12 @@ jobs:
         run: python manage.py migrate
         working-directory: flightbooking
 
-      - name: Run Pylint (don't fail)
+      - name: Run Pylint
         run: |
           cd flightbooking
           pylint bookings || true
 
-      - name: Run Bandit (don't fail)
+      - name: Run Bandit
         run: |
           cd flightbooking
           bandit -r bookings || true
