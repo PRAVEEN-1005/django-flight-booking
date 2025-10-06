@@ -31,8 +31,9 @@ jobs:
 
       - name: Run Pylint
         run: |
-          cd flightbooking
-          pylint bookings || true
+          pylint --rcfile=../.pylintrc bookings || true
+        working-directory: flightbooking
+
 
       - name: Run Bandit
         run: |
