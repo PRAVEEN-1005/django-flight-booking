@@ -1,6 +1,8 @@
+"""Database models for the flight booking system."""
 from django.db import models
 
 class Flight(models.Model):
+    """Represents a flight between two locations."""
     flight_number = models.CharField(max_length=10, unique=True)
     origin = models.CharField(max_length=100)
     destination = models.CharField(max_length=100)
@@ -13,6 +15,7 @@ class Flight(models.Model):
 
 
 class Passenger(models.Model):
+    """Represents a passenger who can book flights."""
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
@@ -22,6 +25,7 @@ class Passenger(models.Model):
 
 
 class Booking(models.Model):
+    """Represents a booking made by a passenger for a flight."""
     flight = models.ForeignKey(Flight, on_delete=models.CASCADE)
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)
     seat_numbers = models.CharField(max_length=100)  # CSV of seats
